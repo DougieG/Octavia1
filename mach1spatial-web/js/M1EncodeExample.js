@@ -72,12 +72,12 @@ document.addEventListener("DOMContentLoaded", function() {
         div.innerHTML = "";
         div.style.top = -1000;
         div.style.left = -1000;
-        div.style.color = "#ffffff";
+        div.style.color = "#580092";
 
         return {
             element: div,
             parent: false,
-            position: new THREE.Vector3(98, 0, 163),
+            position: new THREE.Vector3(0, 0, 0),
             setHTML: function(html) {
                 this.element.innerHTML = html;
             },
