@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function() {
         return {
             element: div,
             parent: false,
-            position: new THREE.Vector3(0, 0, 0),
+            position: new THREE.Vector3(98, 0, 163),
             setHTML: function(html) {
                 this.element.innerHTML = html;
             },
