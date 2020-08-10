@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	m1EncodeModule.onInited = function() {
 		m1Encode = new(m1EncodeModule).Mach1Encode();
 	};
-	
+
     const FRAMES_PER_SECOND = 60;
 
     var audioFiles;
@@ -53,11 +53,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		else {
 			audioFiles = ['audio/mono/1.ogg'];
 		}
-		
+
 		if(mach1SoundPlayer) {
 			mach1SoundPlayer.remove();
 		}
-		
+
 		mach1SoundPlayer = new Mach1SoundPlayer();
 		mach1SoundPlayer.setup(audioFiles);
  	};
@@ -127,18 +127,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var sphereGeometry = new THREE.SphereGeometry(0.1, 16, 16);
     var sphereMaterial = new THREE.MeshBasicMaterial({
-        color: 0xff0000
+        color: 0xAB82C7
     });
 
     var lineMaterial = new THREE.LineBasicMaterial({
-        color: 0xaaaaaa
+        color: 0xF9B2F4
     });
 
 
     var dir = new THREE.Vector3(1, 0, 0);
     var origin = new THREE.Vector3(0, 0, 0);
     var length = 1;
-    var hex = 0xff0000;
+    var hex = 0xAB82C7;
     var arrowHelper = new THREE.ArrowHelper(dir.normalize(), origin, length, hex);
     scene.add(arrowHelper);
 
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	var arrowLineHelper = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: hex }));
     scene.add(arrowLineHelper);
 
-	
+
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", function() {
     function animate() {
         requestAnimationFrame(animate);
 
-        //sphere.position.x += 0.001; 
+        //sphere.position.x += 0.001;
         controls.update(); // required if controls.enableDamping or controls.autoRotate are set to true
         for (var i = 0; i < textlabels.length; i++) {
             textlabels[i].updatePosition();
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // add elements
         for (var i = 0; i < m1Encode.getPointsCount(); i++) {
-            // sphere 
+            // sphere
             var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
             sphere.position.set(points[i].x * 2 - 1, points[i].y * 2 - 1, points[i].z * 2 - 1);
             spheres.push(sphere);
@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", function() {
     folder.add(params, 'decoderRotationP', -90, 90, 1).name('Decoder Pitch');
     folder.add(params, 'decoderRotationR', -180, 180, 1).name('Decoder Roll');
 
-    // update 
+    // update
     function update() {
         m1Encode.setAzimuth(params.rotation);
         m1Encode.setDiverge(params.diverge);
@@ -318,11 +318,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (m1Decode && m1Encode && mach1SoundPlayer && mach1SoundPlayer.isReady() ) {
 			update();
 			toggleInputOutputKind();
-			
+
             mach1SoundPlayer.play(true);
-        } 
+        }
 	}
-	
+
 	function __timeoutUpdateVolumes() {
         if (mach1SoundPlayer && mach1SoundPlayer.isPlaying()) {
 
@@ -334,14 +334,14 @@ document.addEventListener("DOMContentLoaded", function() {
             rotation.y = Math.fround(THREE.Math.radToDeg(rotation.y));
             rotation.z = Math.fround(THREE.Math.radToDeg(rotation.z));
 			*/
-			
+
             m1Decode.beginBuffer();
             var decoded = m1Decode.decode(params.decoderRotationY, params.decoderRotationP, params.decoderRotationR);// rotation.x, rotation.y, rotation.z);
             m1Decode.endBuffer();
 
-			/* 
+			/*
 			// legacy style
-			
+
 			var vol = [0, 0];
             var gains = m1Encode.getGains();
 
@@ -350,10 +350,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 vol[0] += (decoded[2 * j + 0]) * gains[0][j];
                 vol[1] += (decoded[2 * j + 1]) * gains[gains.length > 1 ? 1 : 0][j];
             }
-			
+
 			console.log(vol);
 			*/
-			
+
 			var vol = [];
 			if (params.outputKind == 0) { // Output: Mach1Horizon / Quad
 				vol = m1Encode.getResultingVolumesDecoded(m1Decode.Mach1DecodeAlgoType.Mach1DecodeAlgoHorizon, decoded);
@@ -390,11 +390,11 @@ document.addEventListener("DOMContentLoaded", function() {
             mach1SoundPlayer.updateVolumes(vol);
 
             var angle = m1Decode.getCurrentAngle();
- 
+
 			arrowHelper.rotation.set(0,0,0);
             arrowHelper.rotation.y = THREE.Math.degToRad(angle.x) * -1; // yaw
 	        arrowHelper.rotation.z = THREE.Math.degToRad(angle.y) * -1 - Math.PI / 2; // pitch
-	
+
 			// rotate
 			var vec = new THREE.Euler();
 			vec.x = 0;
@@ -402,16 +402,16 @@ document.addEventListener("DOMContentLoaded", function() {
 			vec.z = THREE.Math.degToRad(angle.y) * -1; // pitch
 			var rotationMatrixOrig = new THREE.Matrix4();
 			rotationMatrixOrig.makeRotationFromEuler(vec);
-				
+
 			var rotationMatrixRoll = new THREE.Matrix4();
 			rotationMatrixRoll.makeRotationAxis( new THREE.Vector3(1, 0, 0), THREE.Math.degToRad(angle.z) * -1 );
 			rotationMatrixOrig.multiply(rotationMatrixRoll); // post multiply
-			
+
 			arrowLineHelper.matrix = rotationMatrixOrig;
 			arrowLineHelper.rotation.setFromRotationMatrix( arrowLineHelper.matrix );
         }
 	}
-	
+
     setInterval(__playTimeout, 100);
     setInterval(__timeoutUpdateVolumes, 1000 / FRAMES_PER_SECOND);
 });
